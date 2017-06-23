@@ -42,10 +42,9 @@ namespace BrunoGarcia.Net
                 var bytesRead = state.SourceSocket.EndReceive(result);
                 if (bytesRead > 0)
                 {
-                    Console.WriteLine("[Recv] " + ByteArrayToString(TrimEnd(state.Buffer)));
-                    handlePacket(state);
+                    Console.WriteLine("[Send] " + ByteArrayToString(TrimEnd(state.Buffer)));
                     state.DestinationSocket.Send(state.Buffer, bytesRead, SocketFlags.None);
-                    state.SourceSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, 0, OnDataReceive, state);
+                    state.SourceSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, 0, OnDataReceiveSource, state);
                 }
             }
             catch
@@ -53,13 +52,6 @@ namespace BrunoGarcia.Net
                 state.DestinationSocket.Close();
                 state.SourceSocket.Close();
             }
-        }
-
-        private static bool handlePacket(State state)
-        {
-            var header = new Packets.PacketHeader(state.Buffer);
-            Console.WriteLine("Magic: " + header.cmd);
-            return true;
         }
 
         public static bool login = true;
@@ -72,19 +64,7 @@ namespace BrunoGarcia.Net
                 var bytesRead = state.SourceSocket.EndReceive(result);
                 if (bytesRead > 0)
                 {
-                    // E1 2C
-                    var first       = "DB 16 00 00 00 00 00 00 22 6C 4E 05 05 00 00 01 01 08 09 11 E5 B4";
-                    var forut       = "DB 16 00 00 0C 0C 24 24 22 6C 4E 05 05 00 00 01 01 08 09 11 E5 B4";
-
-                    // E7 21
-                    var first1      = "DB 16 00 00 0C 0C 35 35 22 6C 4E 05 05 00 00 01 01 08 09 11 E5 B4";
-                    var secon1      = "DB 16 00 00 0A 0A 56 56 22 6C 4E 05 05 00 00 01 01 08 09 11 E5 B4";
-
-                    // E2 2A
-                    var first2      = "DB 16 00 00 00 00 00 00 22 6C 4E 05 05 00 00 01 01 08 09 11 E5 B4";
-                    var second2     = "DB 16 00 00 00 00 00 00 22 6C 4E 05 05 00 00 01 01 08 09 11 E5 B4";
-
-                    //Console.WriteLine("[Send] " + ByteArrayToString(TrimEnd(state.Buffer)));
+                    Console.WriteLine("[Recv] " + ByteArrayToString(TrimEnd(state.Buffer)));
                     state.DestinationSocket.Send(state.Buffer, bytesRead, SocketFlags.None);
                     state.SourceSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, 0, OnDataReceive, state);
                 }
